@@ -434,12 +434,16 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
         {
             s_fraction[p.first]  = p.second/iso_cnt;
         }
+        delete fth_here, f_here, g_here;
     }
 
     ofstream snaps0(iso_out, ios::binary | ios::out   );
     snaps0.write((char*)fraction, sizeof(float)*N);
     snaps0.write((char*)s_fraction, sizeof(float)*N);
     snaps0.close();
+
+    delete dr_times, as_times, fth,f,g;
+    delete fraction, s_fraction;
 }
 
 void iso_stress_sequence(string iso_fname, string iso_out, int iso_cnt, float k0,float k1, float k2, float f1, float f2, int Lx, int Ly, float dh)
