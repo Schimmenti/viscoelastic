@@ -437,8 +437,6 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
     snaps0.close();
 }
 
-
-
 void iso_stress_sequence(string iso_fname, string iso_out, int iso_cnt, float k0,float k1, float k2, float f1, float f2, int Lx, int Ly, float dh)
 {
     
@@ -542,9 +540,9 @@ int main(int argc, char **argv)
     int load_snapshot = -1;
 
     string source_file = "";
-    string iso_source_file = "";
-    string iso_output_file = "";
-    int iso_count = 0;
+    string iso_source_folder = "";
+    string iso_output_folder = "";
+    int iso_stress_count = 0;
     
     int n_events = 10000000;
 
@@ -624,27 +622,34 @@ int main(int argc, char **argv)
         {
             source_file = element.second;
         }
-        else if(name=="iso_stress_file")
+        else if(name=="iso_source_folder")
         {
-            iso_source_file = element.second;
+            iso_source_folder = element.second;
         }
-        else if(name=="iso_output_file")
+        else if(name=="iso_output_folder")
         {
-            iso_output_file = element.second;
+            iso_output_folder = element.second;
         }
         else if(name=="iso_stress_count")
         {
-            iso_count = load_snapshot =  stoi(element.second);
+            iso_stress_count = load_snapshot =  stoi(element.second);
         }
     }
 
-    cout << iso_count << " " << iso_source_file << " " << iso_output_file << endl;
-
-    if(iso_count  > 0 && iso_source_file != "" && iso_output_file != "")
+    if(iso_stress_count  > 0 && source_file != "" && iso_source_folder != "" && iso_output_folder != "")
     {
         cout << "Creating distribution (isostress)..." << endl;
-        iso_stress_distribution(iso_source_file, iso_output_file, iso_count, k0,k1,k2,f1,f2,Lx,Ly,dh);
+        std::ifstream infile(source_file);
+        int file_id;
+        
+        while (infile >> file_id)
+        {
+            string iso_source_file = iso_source_folder + "events0_" + to_string(file_id) + ".dat";
+            string iso_output_file = iso_output_folder + "distr0_" + to_string(file_id) + ".dat";
+            iso_stress_distribution(iso_source_file, iso_output_file, iso_stress_count, k0,k1,k2,f1,f2,Lx,Ly,dh);
+        }
         cout << "Finished." << endl;
+        infile.close();
         exit(0);
     }
 
