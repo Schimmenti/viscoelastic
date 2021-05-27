@@ -364,6 +364,11 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
     float* f = new float[N];
     float* g = new float[N];
     ifstream snaps(iso_fname, ios::binary | ios::in   );
+    if(!snaps.is_open())
+    {
+        cout << "FATAL" << endl;
+        exit(0);
+    }
     snaps.read((char*)fth, sizeof(float)*N);
     snaps.read((char*)f, sizeof(float)*N);
     snaps.read((char*)g, sizeof(float)*N);
@@ -644,15 +649,19 @@ int main(int argc, char **argv)
         cout << "Creating distribution (isostress)..." << endl;
         std::ifstream infile(source_file);
         int file_id;
-        
-        while (infile >> file_id)
+        list<int> events_to_run;
+        while(infile >> file_id)
         {
+            events_to_run.push_back(file_id);
+        }
+        infile.close();
+        for (int file_id : events_to_run)
+        {
+            cout << file_id << endl;
             string iso_source_file = iso_source_folder + "events0_" + to_string(file_id) + ".dat";
             string iso_output_file = iso_output_folder + "distr0_" + to_string(file_id) + ".dat";
             iso_stress_distribution(iso_source_file, iso_output_file, iso_stress_count, k0,k1,k2,f1,f2,Lx,Ly,dh);
         }
-        cout << "Finished." << endl;
-        infile.close();
         exit(0);
     }
 
