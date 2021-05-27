@@ -636,8 +636,11 @@ int main(int argc, char **argv)
         }
     }
 
-    if(iso_stress_count  > 0 && source_file != "" && iso_source_folder != "" && iso_output_folder != "")
+    if(iso_stress_count  > 0)
     {
+        cout << iso_output_folder << endl;
+        cout << iso_output_folder << endl;
+        cout << source_file << endl;
         cout << "Creating distribution (isostress)..." << endl;
         std::ifstream infile(source_file);
         int file_id;
