@@ -552,6 +552,7 @@ int main(int argc, char **argv)
     string iso_source_folder = "";
     string iso_output_folder = "";
     int iso_stress_count = 0;
+    int iso_resume_from  = -1;
     
     int n_events = 10000000;
 
@@ -641,13 +642,17 @@ int main(int argc, char **argv)
         }
         else if(name=="iso_stress_count")
         {
-            iso_stress_count = load_snapshot =  stoi(element.second);
+            iso_stress_count =  stoi(element.second);
+        }
+        else if(name=="iso_resume_from")
+        {
+            iso_resume_from = stoi(element.second);
         }
     }
 
     if(iso_stress_count  > 0)
     {
-        cout << iso_output_folder << endl;
+        cout << iso_source_folder << endl;
         cout << iso_output_folder << endl;
         cout << source_file << endl;
         cout << "Creating distribution (isostress)..." << endl;
@@ -661,6 +666,8 @@ int main(int argc, char **argv)
         infile.close();
         for (int file_id : events_to_run)
         {
+            if(file_id < iso_resume_from)
+                continue;
             cout << file_id << endl;
             string iso_source_file = iso_source_folder + "events0_" + to_string(file_id) + ".dat";
             string iso_output_file = iso_output_folder + "distr0_" + to_string(file_id) + ".dat";
