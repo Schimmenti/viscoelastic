@@ -1,0 +1,5 @@
+vdep*.*
+vdep*/
+slurm*.txt
+events*.txt
+*.out
