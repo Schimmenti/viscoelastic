@@ -219,7 +219,7 @@ int nanargmin(float* x, int N, float min_val=0.0)
     return idx;
 }
 set<int>* propagate(float k0,float k1, float k2, float f1, float f2, int Lx, int Ly, float dh,
-    float* fth, float* f, float* g, int epicenter, int* S, float* S_real, int* A, set<int>* sequence_sites, map<int, float>& s_sequence)
+    float* fth, float* f, float* g, int epicenter, int* S, float* S_real, int* A, set<int>& sequence_sites, map<int, float>& s_sequence)
     {
         set<int>* sites;
         sites = new set<int>();
@@ -236,10 +236,9 @@ set<int>* propagate(float k0,float k1, float k2, float f1, float f2, int Lx, int
         while(sites->size()>0)
         {
             float z = dh*av_drop(av_engine);
-            //float z = dh;
             for(int site : *sites)
             {
-                sequence_sites->insert(site);
+                sequence_sites.insert(site);
                 float old_drop = s_sequence[site];
                 s_sequence[site] = old_drop + z;
                 *S = *S+1;
@@ -254,16 +253,11 @@ set<int>* propagate(float k0,float k1, float k2, float f1, float f2, int Lx, int
             }
             for(int site : *sites)
             {
-                //int x = site / Ly;
-                //int y = site % Ly;
                 for(int j =0 ; j < 4; j++)
                 {
-                    //int n_site = get_neighbour_obc(site,j,Lx,Ly);
                     int n_site = get_neighbour_rbc(site,j,Lx,Ly);
                     if(n_site != -1)
                     {
-                        //int xj = n_site / Ly;
-                        //int yj = n_site % Ly;
                         touchedSites->insert(n_site);
                         
                         f[n_site] += k2*z;
@@ -273,25 +267,19 @@ set<int>* propagate(float k0,float k1, float k2, float f1, float f2, int Lx, int
                     }
                 }
             }
+            sites->clear();
             delete sites;
             sites = new_sites;
             new_sites = new set<int>();
         }
 
-        //int invalid_cnt = 0;
-        //    for(int i = 0; i < Lx*Ly; i++)
-        //    {
-        //        if(fth[i]-f[i]-g[i] <= 0)
-        //        {
-        //            cout << fth[i]-f[i] - g[i] << endl;
-        //            invalid_cnt++;
-        //        }
-        //    }
-        //    cout << invalid_cnt << " " << new_sites->size() << endl;
-//
         *A = avalancheSites->size();
+        sites->clear();
+        new_sites->clear();
+        avalancheSites->clear();
         delete sites;
         delete new_sites;
+        delete avalancheSites;
         return touchedSites;
     };
 void snapshot(string hash_fname_str, int snap_idx, float* fth, float* f, float* g, int N)
@@ -411,6 +399,7 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
 
     for(int c = 0; c < iso_cnt; c++)
     {
+        cout << c << endl;
         set<int> sequence_sites;
         map<int,float> s_sequence_sites;
         int S = 0;
@@ -425,7 +414,8 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
             f_here[i] = f[i];
             g_here[i] = g[i];
         }
-        set<int>* touchedSites = propagate(k0,k1,k2,f1,f2,Lx,Ly,dh,fth_here,f_here,g_here,epicenter, &S, &S_real, &A, &sequence_sites,s_sequence_sites);
+        set<int>* touchedSites = propagate(k0,k1,k2,f1,f2,Lx,Ly,dh,fth_here,f_here,g_here,epicenter, &S, &S_real, &A, sequence_sites,s_sequence_sites);
+        touchedSites->clear();
         for(int j : sequence_sites)
         {
             fraction[j] += 1.0/iso_cnt;
@@ -434,7 +424,11 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
         {
             s_fraction[p.first]  = p.second/iso_cnt;
         }
-        delete fth_here, f_here, g_here;
+        sequence_sites.clear();
+        s_sequence_sites.clear();
+        delete [] fth_here;
+        delete [] f_here;
+        delete [] g_here;
     }
 
     ofstream snaps0(iso_out, ios::binary | ios::out   );
@@ -442,10 +436,15 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
     snaps0.write((char*)s_fraction, sizeof(float)*N);
     snaps0.close();
 
-    delete dr_times, as_times, fth,f,g;
-    delete fraction, s_fraction;
+    delete[]fth;
+    delete[]f;
+    delete[]g;
+    delete[]dr_times;
+    delete[]as_times;
+    delete[]fraction;
+    delete[]s_fraction;
 }
-
+/*
 void iso_stress_sequence(string iso_fname, string iso_out, int iso_cnt, float k0,float k1, float k2, float f1, float f2, int Lx, int Ly, float dh)
 {
     
@@ -527,7 +526,7 @@ void iso_stress_sequence(string iso_fname, string iso_out, int iso_cnt, float k0
     snaps0.write((char*)fraction, sizeof(float)*N);
     snaps0.write((char*)s_fraction, sizeof(float)*N);
     snaps0.close();
-}
+}*/
 
 
 int main(int argc, char **argv)
@@ -552,7 +551,6 @@ int main(int argc, char **argv)
     string iso_source_folder = "";
     string iso_output_folder = "";
     int iso_stress_count = 0;
-    int iso_resume_from  = -1;
     
     int n_events = 10000000;
 
@@ -642,17 +640,13 @@ int main(int argc, char **argv)
         }
         else if(name=="iso_stress_count")
         {
-            iso_stress_count =  stoi(element.second);
-        }
-        else if(name=="iso_resume_from")
-        {
-            iso_resume_from = stoi(element.second);
+            iso_stress_count = load_snapshot =  stoi(element.second);
         }
     }
 
     if(iso_stress_count  > 0)
     {
-        cout << iso_source_folder << endl;
+        cout << iso_output_folder << endl;
         cout << iso_output_folder << endl;
         cout << source_file << endl;
         cout << "Creating distribution (isostress)..." << endl;
@@ -666,8 +660,6 @@ int main(int argc, char **argv)
         infile.close();
         for (int file_id : events_to_run)
         {
-            if(file_id < iso_resume_from)
-                continue;
             cout << file_id << endl;
             string iso_source_file = iso_source_folder + "events0_" + to_string(file_id) + ".dat";
             string iso_output_file = iso_output_folder + "distr0_" + to_string(file_id) + ".dat";
@@ -839,7 +831,7 @@ int main(int argc, char **argv)
         int S = 0;
         float S_real = 0.0;
         int A = 0;
-        set<int>* touchedSites = propagate(k0,k1,k2,f1,f2,Lx,Ly,dh,fth,f,g,epicenter, &S, &S_real, &A, &sequence_sites,s_sequence_sites);
+        set<int>* touchedSites = propagate(k0,k1,k2,f1,f2,Lx,Ly,dh,fth,f,g,epicenter, &S, &S_real, &A, sequence_sites,s_sequence_sites);
         outfile << std::setprecision(15) << S_real << " ";
         outfile << S << " " << A << " ";
         outfile << is_as << " ";
