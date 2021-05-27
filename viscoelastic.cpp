@@ -649,6 +649,8 @@ int main(int argc, char **argv)
         {
             string iso_source_file = iso_source_folder + "events0_" + to_string(file_id) + ".dat";
             string iso_output_file = iso_output_folder + "distr0_" + to_string(file_id) + ".dat";
+            cout << iso_source_file << endl;
+            cout << iso_source_file << endl;
             iso_stress_distribution(iso_source_file, iso_output_file, iso_stress_count, k0,k1,k2,f1,f2,Lx,Ly,dh);
         }
         cout << "Finished." << endl;
