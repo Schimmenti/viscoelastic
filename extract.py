@@ -33,10 +33,11 @@ print('Number of files: ', len(file_idxs))
 current_batch = []
 for cnt,idx in enumerate(file_idxs):
    try:
-      input_data = np.fromfile(main_folder + ('events0_%i.dat' % idx), dtype='float32').reshape(1,3,Lx,Ly) 
+      input_data = np.fromfile(main_folder + ('events0_%i.dat' % idx), dtype='float32').reshape(1,3,Lx,Ly)
+      input_data2 = np.fromfile(main_folder + ('events1_%i.dat' % idx), dtype='float32').reshape(1,3,Lx,Ly) 
       data = np.fromfile(folder +('distr0_%i.dat' % idx), dtype='float32')
       data = data.reshape(1,2,Lx,Ly)
-      current_batch.append(np.concatenate([input_data, data], axis=1))  
+      current_batch.append(np.concatenate([input_data,input_data2, data], axis=1))  
       if((cnt+1) % batch_size==0):
          print(cnt)
          np.save( out_folder + ('batch_%i.npy'%(cnt//batch_size)),  np.concatenate(current_batch, axis=0))

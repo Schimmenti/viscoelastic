@@ -6,7 +6,7 @@
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=vincenzo.schimmenti@universite-paris-saclay.fr
 #SBATCH --job-name=isostress
-#SBATCH --time=12:00:00
+#SBATCH --time=23:59:59
 #SBTAHC --mem-per-cpu=10G
 eval $1 ; eval $2 ; eval $3 ; eval $4 ;
 
