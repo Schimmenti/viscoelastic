@@ -399,7 +399,6 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
 
     for(int c = 0; c < iso_cnt; c++)
     {
-        cout << c << endl;
         set<int> sequence_sites;
         map<int,float> s_sequence_sites;
         int S = 0;
