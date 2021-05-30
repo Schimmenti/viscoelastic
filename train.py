@@ -1,5 +1,4 @@
 import torch
-from torch._C import get_device
 import torch.nn as nn
 import torch.optim as optim
 import torch.functional as F
@@ -12,8 +11,6 @@ print('Number of CUDA devices: ')
 print(torch.cuda.device_count())
 
 dvc = torch.get_device('cuda') if torch.cuda.is_available() else torch.get_device('cpu')
-
-exit()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--batches_folder', default='vdep_batches/')
