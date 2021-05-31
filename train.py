@@ -6,6 +6,7 @@ import numpy as np
 import argparse
 from u_net_model import *
 import torch.cuda
+import matplotlib.pyplot as plt
 
 dvc_cnt = torch.cuda.device_count()
 
@@ -26,9 +27,10 @@ parser.add_argument('--min_batch_idx', type=int, default=0)
 parser.add_argument('--max_batch_idx', type=int, default=9)
 parser.add_argument('--model_state_file')
 parser.add_argument('--lr', type=float, default=0.001)
-parser.add_argument('--batch_sz', type=int, default=8)
+parser.add_argument('--batch_sz', type=int, default=10)
 parser.add_argument('--train_ratio', type=float, default=0.7)
 parser.add_argument('--epochs', type=int, default=100)
+parser.add_argument('--evaluate', type=int, default=0)
 
 args = parser.parse_args()
 folder = args.batches_folder
@@ -99,14 +101,25 @@ print("Data loading complete.")
 #model loading
 
 
-net = UNet(3, 2)
+net = UNet(3, 1)
 
 #torch.save(model.state_dict(), PATH)
 
 try:
     net.load_state_dict(torch.load(model_state_file))
     print('Model loading completed.')
-    #net.eval()
+    if(args.evaluate > 0):
+       net.eval()
+       random_indices = np.random.choice(x_test, size=10)
+       x_batch = x_test[random_indices]
+       y_batch = y_test[random_indices]
+       y_out = net(x_batch)
+       plt.imshow(y_out[0].numpy())
+       plt.savefig('out.png')
+       plt.close()
+       plt.imshow(y_batch[0].numpy())
+       plt.savefig('test.png')
+       plt.close()       
 except:
     print('Could not load saved model state.')
 
@@ -118,14 +131,14 @@ net.to(device)
 
 optimizer = optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-8, momentum=0.9)
 criterion = nn.BCEWithLogitsLoss()
-
+net.train()
 for epoch in range(epochs):
    print(epoch)
    perm = torch.randperm(x_train.size(0))
    idx = perm[:batch_sz]
    x_batch = x_train[idx].to(device)
    y_batch = y_train[idx].to(device)
-   y_out = net(x_batch)
+   y_out = net(x_batch)   
    print(y_batch.shape, y_out.shape)
    loss = criterion(y_out, y_batch)
    optimizer.zero_grad()
@@ -134,7 +147,8 @@ for epoch in range(epochs):
    print(loss.item())
    del x_batch
    del y_batch
-
+   if(epoch % 10 == 0):
+      torch.save(net.state_dict(), model_state_file)      
 
 
 

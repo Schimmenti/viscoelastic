@@ -33,4 +33,6 @@ class UNet(nn.Module):
         x = self.up3(x, x2)
         x = self.up4(x, x1)
         logits = self.outc(x)
+        if(self.n_classes==1):
+           logits = logits[:,0,...]
         return logits
