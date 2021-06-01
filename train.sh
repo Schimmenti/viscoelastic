@@ -8,9 +8,9 @@
 #SBATCH --job-name=isostress
 #SBATCH --time=23:59:59
 ##SBATCH --mem-per-cpu=10G
-eval $1 ; eval $2 ; eval $3 ; eval $4 ;
+eval $1 ; eval $2 ; eval $3 ; eval $4 ; eval $5 ;
 
 echo  "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 
 
-python train.py --batches_folder=$batches_folder --min_batch_idx=$min_batch_idx --max_batch_idx=$max_batch_idx --model_state_file=$model_state_file
+python train.py --batches_folder=$batches_folder --min_batch_idx=$min_batch_idx --max_batch_idx=$max_batch_idx --model_state_file=$model_state_file --evaluate=$evaluate
