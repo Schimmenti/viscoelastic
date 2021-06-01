@@ -421,7 +421,7 @@ void iso_stress_distribution(string iso_fname, string iso_out, int iso_cnt, floa
         }
         for(pair<int, float> p : s_sequence_sites)
         {
-            s_fraction[p.first]  = p.second/iso_cnt;
+            s_fraction[p.first]  += p.second/iso_cnt;
         }
         sequence_sites.clear();
         s_sequence_sites.clear();
