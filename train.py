@@ -42,12 +42,11 @@ lr = args.lr
 batch_sz = args.batch_sz
 epochs = args.epochs
 evaluate = args.evaluate > 0
-
+train_ratio = args.train_ratio
 
 #we need here to load the desired files
-import psutil
-print(psutil.virtual_memory())
-exit()
+
+
 
 
 
@@ -79,6 +78,28 @@ exit()
 
 np.random.seed(1204565)
 torch.manual_seed(1204565)
+
+x_train = []
+x_test = []
+y_train = []
+y_test = []
+
+for idx in range(min_idx,max_idx+1):
+    temp = np.load(folder + ('batch_%i.npy' % idx), allow_pickle=True)
+    indices = np.random.choice(temp.shape[0],size=temp.shape[0], replace=False)
+    train_sz = int(train_ratio*len(indices))
+    train_indices = indices[:train_sz]
+    test_indices = indices[train_sz:]
+    x_train.append(torch.from_numpy(temp[train_indices,3:6,...]))
+    x_test.append(torch.from_numpy(temp[test_indices,3:6,...]))
+    y_train.append(torch.from_numpy(temp[train_indices,6,...]))
+    y_test.append(torch.from_numpy(temp[test_indices,6,...]))
+
+x_train = torch.cat(x_train, dim=0)
+x_test = torch.cat(x_test, dim=0)
+y_train = torch.cat(y_train, dim=0)
+y_test = torch.cat(y_test, dim=0)
+
 
 #tot_sz = x_data.shape[0]
 #train_sz = int(args.train_ratio*tot_sz)
