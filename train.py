@@ -46,7 +46,7 @@ evaluate = args.evaluate > 0
 
 #we need here to load the desired files
 import psutil
-psutil.virtual_memory()
+print(psutil.virtual_memory())
 exit()
 
 
