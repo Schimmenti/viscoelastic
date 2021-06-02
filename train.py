@@ -27,9 +27,9 @@ parser.add_argument('--min_batch_idx', type=int, default=0)
 parser.add_argument('--max_batch_idx', type=int, default=9)
 parser.add_argument('--model_state_file')
 parser.add_argument('--lr', type=float, default=0.001)
-parser.add_argument('--batch_sz', type=int, default=10)
+parser.add_argument('--batch_sz', type=int, default=5)
 parser.add_argument('--train_ratio', type=float, default=0.7)
-parser.add_argument('--epochs', type=int, default=100)
+parser.add_argument('--epochs', type=int, default=500)
 parser.add_argument('--evaluate', type=int, default=0)
 
 args = parser.parse_args()
@@ -50,9 +50,9 @@ except:
     y1_data = []
     for idx in range(min_idx,max_idx+1):
         temp = np.load(folder + ('batch_%i.npy' % idx), allow_pickle=True)
-        x_data.append(temp[:,0:3,...])
-        y0_data.append(temp[:,3,...])
-        y1_data.append(temp[:,4,...])
+        x_data.append(temp[:,3:6,...])
+        y0_data.append(temp[:,6,...])
+        y1_data.append(temp[:,7,...])
     x_data = np.concatenate(x_data,axis=0)
     y0_data = np.concatenate(y0_data, axis=0)
     y1_data = np.concatenate(y1_data,axis=0)
@@ -107,21 +107,21 @@ net = UNet(3, 1)
 
 try:
     net.load_state_dict(torch.load(model_state_file))
-    print('Model loading completed.')
-    if(args.evaluate > 0):
+    print('Model loading completed.')      
+except:
+    print('Could not load saved model state.')
+
+
+if(args.evaluate > 0):
        net.eval()
-       random_indices = np.random.choice(x_test, size=10)
+       random_indices = torch.from_numpy(np.random.choice(x_test.size(0), size=10)) 
        x_batch = x_test[random_indices]
        y_batch = y_test[random_indices]
        y_out = net(x_batch)
-       plt.imshow(y_out[0].numpy())
-       plt.savefig('out.png')
-       plt.close()
-       plt.imshow(y_batch[0].numpy())
-       plt.savefig('test.png')
-       plt.close()       
-except:
-    print('Could not load saved model state.')
+       print('Evaluated')
+       np.save('test_res.npy', [x_batch.detach().numpy(),y_batch.detach().numpy(), y_out.detach().numpy()])
+       exit()
+
 
 net.to(device)
 

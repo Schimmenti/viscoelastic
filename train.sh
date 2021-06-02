@@ -2,7 +2,7 @@
 #SBATCH -v
 #SBATCH -N 1
 #SBATCH -c 2
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:3
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=vincenzo.schimmenti@universite-paris-saclay.fr
 #SBATCH --job-name=isostress
