@@ -2,12 +2,12 @@
 #SBATCH -v
 #SBATCH -N 1
 #SBATCH -c 2
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:3
 #SBATCH --mail-type=FAIL,END
 #SBATCH --mail-user=vincenzo.schimmenti@universite-paris-saclay.fr
 #SBATCH --job-name=isostress
 #SBATCH --time=23:59:59
-##SBATCH --mem-per-cpu=50G
+#SBATCH --mem-per-cpu=100G
 eval $1 ; eval $2 ; eval $3 ; eval $4 ; eval $5 ;
 
 echo  "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
