@@ -85,6 +85,7 @@ y_train = []
 y_test = []
 
 for idx in range(min_idx,max_idx+1):
+    print('Loading batch %i' % idx)
     temp = np.load(folder + ('batch_%i.npy' % idx), allow_pickle=True)
     indices = np.random.choice(temp.shape[0],size=temp.shape[0], replace=False)
     train_sz = int(train_ratio*len(indices))
