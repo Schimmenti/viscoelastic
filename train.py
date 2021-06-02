@@ -7,6 +7,7 @@ import argparse
 from u_net_model import *
 import torch.cuda
 import matplotlib.pyplot as plt
+import pickle
 
 dvc_cnt = torch.cuda.device_count()
 
@@ -118,8 +119,10 @@ if(args.evaluate > 0):
        x_batch = x_test[random_indices]
        y_batch = y_test[random_indices]
        y_out = net(x_batch)
+       print(x_batch.shape,y_batch.shape,y_out.shape)
        print('Evaluated')
-       np.save('test_res.npy', [x_batch.detach().numpy(),y_batch.detach().numpy(), y_out.detach().numpy()])
+       with open('test_res.pkl', 'w') as outf:
+          pickle.dump([x_batch.detach().numpy(),y_batch.detach().numpy(), y_out.detach().numpy()], outf)
        exit()
 
 
