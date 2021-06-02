@@ -7,7 +7,6 @@ import argparse
 from u_net_model import *
 import torch.cuda
 import matplotlib.pyplot as plt
-import pickle
 
 dvc_cnt = torch.cuda.device_count()
 
@@ -44,37 +43,8 @@ epochs = args.epochs
 evaluate = args.evaluate > 0
 train_ratio = args.train_ratio
 
-#we need here to load the desired files
-
-
-
-
-
-#try:
-#    x_data = np.load(folder + 'x_data.npy',allow_pickle=True)    
-#    y0_data = np.load(folder + 'y0_data.npy',allow_pickle=True)
-#    y1_data = np.load(folder + 'y1_data.npy',allow_pickle=True)
-#except:    
-#    x_data = []
-#    y0_data = []
-#    y1_data = []
-#    for idx in range(min_idx,max_idx+1):
-#        temp = np.load(folder + ('batch_%i.npy' % idx), allow_pickle=True)
-#        x_data.append(temp[:,3:6,...])
-#        y0_data.append(temp[:,6,...])
-#        y1_data.append(temp[:,7,...])
-#    x_data = np.concatenate(x_data,axis=0)
-#    y0_data = np.concatenate(y0_data, axis=0)
-#    y1_data = np.concatenate(y1_data,axis=0)
-#    np.save(folder + 'x_data.npy',x_data)
-#    np.save(folder + 'y0_data.npy',y0_data)
-#    np.save(folder + 'y1_data.npy',y1_data)
-
-#x_data = torch.from_numpy(x_data)
-#y0_data = torch.from_numpy(y0_data)
-#y1_data = torch.from_numpy(y1_data)
-
-
+print('Folder with dataset: ', folder)
+print('Model file: ', model_state_file)
 
 np.random.seed(1204565)
 torch.manual_seed(1204565)
@@ -83,6 +53,8 @@ x_train = []
 x_test = []
 y_train = []
 y_test = []
+
+print('Initial phase: dynamical dataset creation')
 
 for idx in range(min_idx,max_idx+1):
     print('Loading batch %i' % idx)
@@ -101,37 +73,6 @@ x_test = torch.cat(x_test, dim=0)
 y_train = torch.cat(y_train, dim=0)
 y_test = torch.cat(y_test, dim=0)
 
-
-#tot_sz = x_data.shape[0]
-#train_sz = int(args.train_ratio*tot_sz)
-#test_sz = tot_sz - train_sz
-#
-#try:
-#   x_train = np.load(folder+'x_train.npy', allow_pickle=True)
-#   x_test = np.load(folder+'x_test.npy', allow_pickle=True)
-#   y_train = np.load(folder+'y_train.npy', allow_pickle=True)
-#   y_test = np.load(folder+'y_test.npy', allow_pickle=True)
-#except:
-#   indices = np.random.choice(tot_sz,size=tot_sz, replace=False)
-#   train_indices = indices[:train_sz]
-#   test_indices = indices[train_sz:]
-#   x_train = x_data[train_indices]
-#   x_test = x_data[test_indices]
-#   y_train = y0_data[train_indices]
-#   y_test = y0_data[test_indices]
-#   np.save(folder+'x_train.npy', x_train)
-#   np.save(folder+'x_test.npy', x_test)
-#   np.save(folder+'y_train.npy', y_train)
-#   np.save(folder+'y_test.npy', y_test)
-#
-#
-#x_train = torch.from_numpy(x_train)
-#x_test = torch.from_numpy(x_test)
-#y_train = torch.from_numpy(y_train)
-#y_test = torch.from_numpy(y_test)
-#
-#
-#model loading
 
 
 
