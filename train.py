@@ -27,10 +27,10 @@ parser.add_argument('--batches_folder', default='vdep_batches/')
 parser.add_argument('--min_batch_idx', type=int, default=0)
 parser.add_argument('--max_batch_idx', type=int, default=9)
 parser.add_argument('--model_state_file')
-parser.add_argument('--lr', type=float, default=0.001)
+parser.add_argument('--lr', type=float, default=0.005)
 parser.add_argument('--batch_sz', type=int, default=5)
 parser.add_argument('--train_ratio', type=float, default=0.7)
-parser.add_argument('--epochs', type=int, default=500)
+parser.add_argument('--epochs', type=int, default=2000)
 parser.add_argument('--evaluate', type=int, default=0)
 
 args = parser.parse_args()
@@ -121,8 +121,9 @@ if(args.evaluate > 0):
        y_out = net(x_batch)
        print(x_batch.shape,y_batch.shape,y_out.shape)
        print('Evaluated')
-       with open('test_res.pkl', 'w') as outf:
-          pickle.dump([x_batch.detach().numpy(),y_batch.detach().numpy(), y_out.detach().numpy()], outf)
+       np.save('test_x_res.npy', x_batch.detach().numpy())
+       np.save('test_y_res.npy', y_batch.detach().numpy())
+       np.save('test_y_out.npy', y_out.detach().numpy())
        exit()
 
 
