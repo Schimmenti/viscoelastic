@@ -131,7 +131,7 @@ for epoch in range(epochs):
    loss_history.append(loss.item())
    del x_batch
    del y_batch
-   if(epoch % 10 == 0):
+   if(epoch % 50 == 0):
        print(loss.item())
        torch.save(net.state_dict(), model_state_file)
        np.savetxt('train_loss.txt', np.array(loss_history))
