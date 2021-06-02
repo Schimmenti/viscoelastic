@@ -12,5 +12,5 @@ eval $1 ; eval $2 ; eval $3 ; eval $4 ; eval $5 ;
 
 echo  "CUDA_VISIBLE_DEVICES = $CUDA_VISIBLE_DEVICES"
 
-
+echo "python train.py --batches_folder=${batches_folder} --min_batch_idx=${min_batch_idx} --max_batch_idx=${max_batch_idx} --model_state_file=${model_state_file} --evaluate=${evaluate}"
 python train.py --batches_folder=$batches_folder --min_batch_idx=$min_batch_idx --max_batch_idx=$max_batch_idx --model_state_file=$model_state_file --evaluate=$evaluate

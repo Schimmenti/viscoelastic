@@ -6,7 +6,8 @@ import numpy as np
 import argparse
 from u_net_model import *
 import torch.cuda
-import matplotlib.pyplot as plt
+
+print('Model load complete.')
 
 dvc_cnt = torch.cuda.device_count()
 
@@ -32,6 +33,7 @@ parser.add_argument('--train_ratio', type=float, default=0.7)
 parser.add_argument('--epochs', type=int, default=2000)
 parser.add_argument('--evaluate', type=int, default=0)
 
+print('Arguments loading.')
 args = parser.parse_args()
 folder = args.batches_folder
 min_idx = args.min_batch_idx
