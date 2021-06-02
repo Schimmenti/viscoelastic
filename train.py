@@ -114,24 +114,27 @@ net.to(device)
 optimizer = optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-8, momentum=0.9)
 criterion = nn.BCEWithLogitsLoss()
 net.train()
+loss_history = []
 for epoch in range(epochs):
-   print(epoch)
+   if(epoch % 10 == 0):
+       print(epoch)
    perm = torch.randperm(x_train.size(0))
    idx = perm[:batch_sz]
    x_batch = x_train[idx].to(device)
    y_batch = y_train[idx].to(device)
    y_out = net(x_batch)   
-   print(y_batch.shape, y_out.shape)
    loss = criterion(y_out, y_batch)
    optimizer.zero_grad()
    loss.backward()
    optimizer.step()
-   print(loss.item())
+   
+   loss_history.append(loss.item())
    del x_batch
    del y_batch
    if(epoch % 10 == 0):
-      torch.save(net.state_dict(), model_state_file)      
-
+       print(loss.item())
+       torch.save(net.state_dict(), model_state_file)
+       np.savetxt('train_loss.txt', np.array(loss_history))
 
 
 
