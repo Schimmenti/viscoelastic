@@ -27,12 +27,12 @@ parser.add_argument('--batches_folder', default='vdep_batches/')
 parser.add_argument('--min_batch_idx', type=int, default=0)
 parser.add_argument('--max_batch_idx', type=int, default=9)
 parser.add_argument('--model_state_file')
-parser.add_argument('--lr', type=float, default=0.005)
-parser.add_argument('--batch_sz', type=int, default=5)
+parser.add_argument('--lr', type=float, default=0.01)
+parser.add_argument('--batch_sz', type=int, default=10)
 parser.add_argument('--train_ratio', type=float, default=0.7)
 parser.add_argument('--epochs', type=int, default=2000)
 parser.add_argument('--evaluate', type=int, default=0)
-
+parser.add_argument('--regression', type=int, default=0)
 print('Arguments loading.')
 args = parser.parse_args()
 folder = args.batches_folder
@@ -44,7 +44,7 @@ batch_sz = args.batch_sz
 epochs = args.epochs
 evaluate = args.evaluate > 0
 train_ratio = args.train_ratio
-
+regression = args.regression > 0
 print('Folder with dataset: ', folder)
 print('Model file: ', model_state_file)
 
@@ -67,8 +67,12 @@ for idx in range(min_idx,max_idx+1):
     test_indices = indices[train_sz:]
     x_train.append(torch.from_numpy(temp[train_indices,3:6,...]))
     x_test.append(torch.from_numpy(temp[test_indices,3:6,...]))
-    y_train.append(torch.from_numpy(temp[train_indices,6,...]))
-    y_test.append(torch.from_numpy(temp[test_indices,6,...]))
+    if(regression):
+        y_train.append(torch.from_numpy(temp[train_indices,7,...]))
+        y_test.append(torch.from_numpy(temp[test_indices,7,...]))
+    else:
+        y_train.append(torch.from_numpy(temp[train_indices,6,...]))
+        y_test.append(torch.from_numpy(temp[test_indices,6,...]))
 
 x_train = torch.cat(x_train, dim=0)
 x_test = torch.cat(x_test, dim=0)
@@ -112,7 +116,10 @@ net.to(device)
 
 
 optimizer = optim.RMSprop(net.parameters(), lr=lr, weight_decay=1e-8, momentum=0.9)
-criterion = nn.BCEWithLogitsLoss()
+if(regression):
+    criterion = nn.BCEWithLogitsLoss()
+else:
+    criterion = nn.MSELoss()
 net.train()
 loss_history = []
 for epoch in range(epochs):
