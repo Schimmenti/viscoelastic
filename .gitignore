@@ -3,3 +3,5 @@ vdep*/
 slurm*.txt
 events*.txt
 *.out
+__pycache__/
+.vscode/
