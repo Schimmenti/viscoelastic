@@ -83,6 +83,10 @@ else:
 net.train()
 loss_history = []
 
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)
+
+
+
 for epoch in range(epochs):
     print('Epoch: ', epoch)
     avg_loss = 0
@@ -90,14 +94,16 @@ for epoch in range(epochs):
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
-        optimizer.zero_grad()
         loss.backward()
+        scheduler.step()
+        optimizer.zero_grad()
+        optimizer.step()
         avg_loss += loss.item()
         optimizer.step()
         batch_counts += 1
     avg_loss /= batch_counts
     loss_history.append(avg_loss)
-    if(epoch % 50 == 0 and model_filename != ""):
+    if(epoch % 5 == 0 and model_filename != ""):
         print(avg_loss) 
         torch.save(net.state_dict(), model_filename)
         np.savetxt('train_loss.txt', np.array(loss_history))
