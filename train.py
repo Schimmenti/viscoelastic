@@ -87,8 +87,8 @@ for epoch in range(epochs):
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
-        y_out = net(x_batch)
-        loss = criterion(y_out, y_batch)
+        y_out = net(x_batch.to(dvc))
+        loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
         loss.backward()
         avg_loss += loss.item()
