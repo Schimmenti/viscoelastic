@@ -94,7 +94,6 @@ else:
 net.train()
 loss_history = []
 
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)
 
 print('Training...')
 
@@ -106,7 +105,6 @@ for epoch in range(epochs):
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
         loss.backward()
-        scheduler.step()
         optimizer.zero_grad()
         optimizer.step()
         avg_loss += loss.item()
