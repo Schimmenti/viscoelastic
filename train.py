@@ -91,7 +91,9 @@ if(evaluate):
             print('Evaluating batch n° %i...' % batch_index)
             
             y_out = net(x_batch)
-            np.save('test_result_%i.npy' % batch_index, np.concatenate((x_batch.numpy()[np.newaxis,...],y_batch.numpy()[np.newaxis,np.newaxis,...],y_out.numpy()[np.newaxis,np.newaxis,...]),axis=0))
+            np.save('x_test_result_%i.npy' % batch_index, x_batch.numpy())
+            np.save('y_test_result_%i.npy' % batch_index, y_batch.numpy())
+            np.save('out_test_result_%i.npy' % batch_index, y_out.numpy())
             break
         exit(0)
 net.to(dvc)
