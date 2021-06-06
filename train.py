@@ -88,6 +88,7 @@ if(evaluate):
         net.eval()
         n_evals = 1
         for batch_index, (x_batch, y_batch) in enumerate(train_loader):
+            print('Evaluating batch n° %i...' % batch_index)
             if(batch_index >= n_evals):
                 break
             y_out = net(x_batch)
