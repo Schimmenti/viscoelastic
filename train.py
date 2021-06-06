@@ -92,7 +92,7 @@ if(evaluate):
             if(batch_index >= n_evals):
                 break
             y_out = net(x_batch)
-            np.save('test_result_%i.npy' % batch_index, np.concatenate((x_batch.numpy()[np.newaxis,...],y_batch.numpy()[np.newaxis,...],y_out.numpy()[np.newaxis,...]),axis=0))
+            np.save('test_result_%i.npy' % batch_index, np.concatenate((x_batch.numpy()[np.newaxis,...],y_batch.numpy()[np.newaxis,np.newaxis,...],y_out.numpy()[np.newaxis,np.newaxis,...]),axis=0))
         exit(0)
 net.to(dvc)
 
