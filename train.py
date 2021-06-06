@@ -86,13 +86,13 @@ if(evaluate):
     #we do not use GPU
     with torch.no_grad():
         net.eval()
-        n_evals = 1
+        
         for batch_index, (x_batch, y_batch) in enumerate(train_loader):
             print('Evaluating batch n° %i...' % batch_index)
-            if(batch_index >= n_evals):
-                break
+            
             y_out = net(x_batch)
             np.save('test_result_%i.npy' % batch_index, np.concatenate((x_batch.numpy()[np.newaxis,...],y_batch.numpy()[np.newaxis,np.newaxis,...],y_out.numpy()[np.newaxis,np.newaxis,...]),axis=0))
+            break
         exit(0)
 net.to(dvc)
 
