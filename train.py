@@ -42,10 +42,12 @@ regression = args.regression > 0
 evaluate = args.evaluate > 0
 train_split = args.train_split
 
+print('Arguments parsed.')
+
 np.random.seed(1204565)
 torch.manual_seed(1204565)
 
-
+print('Dataset loading...')
 
 dataset = ViscoelasticDataset(dataset_list, input_dir, output_dir, input_mode=1, regression=regression)
 
@@ -67,9 +69,18 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
 validation_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
                                                 sampler=test_sampler)
 
+print('Dataset loaders created...')
 
+print('Network creation...')
 
 net = UNet(3,1)
+
+try:
+    net.load_state_dict(torch.load(model_filename))
+    print('Model loading completed...')      
+except:
+    print('Training from scratch...')
+
 net.to(dvc)
 
 
@@ -85,7 +96,7 @@ loss_history = []
 
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=40, gamma=0.1)
 
-
+print('Training...')
 
 for epoch in range(epochs):
     print('Epoch: ', epoch)
