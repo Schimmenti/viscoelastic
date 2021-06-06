@@ -84,6 +84,7 @@ net.train()
 loss_history = []
 
 for epoch in range(epochs):
+    print('Epoch: ', epoch)
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
@@ -140,7 +141,7 @@ for epoch in range(epochs):
 #    print('Loading batch %i' % idx)
 #    temp = np.load(folder + ('batch_%i.npy' % idx), allow_pickle=True)
 #    indices = np.random.choice(temp.shape[0],size=temp.shape[0], replace=False)
-#    train_sz = int(train_ratio*len(indices))
+#    train_sz = int(train_rhttps://github.com/Schimmenti/viscoelasticatio*len(indices))
 #    train_indices = indices[:train_sz]
 #    test_indices = indices[train_sz:]
 #    x_train.append(torch.from_numpy(temp[train_indices,3:6,...]))
