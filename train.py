@@ -119,11 +119,11 @@ for epoch in range(epochs):
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
-        loss.backward()
         optimizer.zero_grad()
+        loss.backward()
+        nn.utils.clip_grad_value_(net.parameters(), 0.1)
         optimizer.step()
         avg_loss += loss.item()
-        optimizer.step()
         batch_counts += 1
     avg_loss /= batch_counts
     loss_history.append(avg_loss)
