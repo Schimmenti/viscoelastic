@@ -1,4 +1,3 @@
-from os import pardir
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -11,13 +10,9 @@ from torch.utils.data import DataLoader
 from viscoset import *
 from torch.utils.data.sampler import SubsetRandomSampler
 
-dvc_cnt = torch.cuda.device_count()
-device_names = [torch.cuda.get_device_name(idx)  for idx in range(dvc_cnt)]
+print('Initialization')
 
-devices = [torch.device("cuda:" + str(idx))  for idx in range(dvc_cnt)]
-
-
-dvc = devices[0]
+dvc = torch.device('cuda')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_dir', default='')
