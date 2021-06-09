@@ -30,6 +30,7 @@ parser.add_argument('--epochs', type=int, default=500)
 parser.add_argument('--evaluate', type=int, default=0)
 parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
+parser.add_argument('--batches_epoch', type=int, default=20)
 args = parser.parse_args()
 input_dir = args.input_dir
 output_dir = args.output_dir
@@ -41,6 +42,7 @@ epochs = args.epochs
 regression = args.regression > 0
 evaluate = args.evaluate > 0
 train_split = args.train_split
+batches_epoch = args.batches_epoch
 
 print('Arguments parsed.')
 
@@ -117,6 +119,7 @@ for epoch in range(epochs):
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
+        print(batch_index)
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
@@ -127,7 +130,7 @@ for epoch in range(epochs):
         batch_counts += 1
     avg_loss /= batch_counts
     loss_history.append(avg_loss)
-    if(epoch % 1 == 0 and model_filename != ""):
+    if(epoch % 5 == 0 and model_filename != ""):
         print(avg_loss) 
         torch.save(net.state_dict(), model_filename)
         np.savetxt('train_loss.txt', np.array(loss_history))
