@@ -5,3 +5,5 @@ events*.txt
 *.out
 __pycache__/
 .vscode/
+__pycache__/u_net_model.cpython-38.pyc
+__pycache__/u_net_modules.cpython-38.pyc

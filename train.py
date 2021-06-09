@@ -117,6 +117,7 @@ for epoch in range(epochs):
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
+        print(batch_index)
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
