@@ -4,10 +4,10 @@ import torch.optim as optim
 import torch.functional as F
 import numpy as np
 import argparse
-from u_net_model import *
+import u_net_model as unet
+import viscoset as vis
 import torch.cuda
-from torch.utils.data import DataLoader
-from viscoset import *
+
 from torch.utils.data.sampler import SubsetRandomSampler
 
 print('Initialization')
@@ -20,12 +20,12 @@ parser.add_argument('--output_dir', default='')
 parser.add_argument('--dataset_list', default='')
 parser.add_argument('--model_filename', default='')
 parser.add_argument('--lr', type=float, default=0.001)
-parser.add_argument('--batch_size', type=int, default=15)
-parser.add_argument('--epochs', type=int, default=500)
+parser.add_argument('--batch_size', type=int, default=10)
+parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--evaluate', type=int, default=0)
 parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
-parser.add_argument('--batches_epoch', type=int, default=20)
+#parser.add_argument('--batches_epoch', type=int, default=20)
 args = parser.parse_args()
 input_dir = args.input_dir
 output_dir = args.output_dir
@@ -37,7 +37,7 @@ epochs = args.epochs
 regression = args.regression > 0
 evaluate = args.evaluate > 0
 train_split = args.train_split
-batches_epoch = args.batches_epoch
+#batches_epoch = args.batches_epoch
 
 print('Arguments parsed.')
 
@@ -46,7 +46,7 @@ torch.manual_seed(1204565)
 
 print('Dataset loading...')
 
-dataset = ViscoelasticDataset(dataset_list, input_dir, output_dir, input_mode=1, regression=regression)
+dataset = vis.ViscoelasticDataset(dataset_list, input_dir, output_dir, input_mode=1, regression=regression)
 
 # Creating data indices for training and test splits:
 shuffle_dataset = True
@@ -70,7 +70,7 @@ print('Dataset loaders created...')
 
 print('Network creation...')
 
-net = UNet(3,1)
+net = unet.UNet(3,1)
 
 try:
     net.load_state_dict(torch.load(model_filename))
@@ -119,7 +119,7 @@ for epoch in range(epochs):
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
         loss.backward()
-        nn.utils.clip_grad_value_(net.parameters(), 0.1)
+        #nn.utils.clip_grad_value_(net.parameters(), 0.1)
         optimizer.step()
         avg_loss += loss.item()
         batch_counts += 1
