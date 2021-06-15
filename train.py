@@ -10,7 +10,7 @@ import torch.cuda
 
 from torch.utils.data.sampler import SubsetRandomSampler
 
-print('Initialization')
+print('Initialization',flush=True)
 
 dvc = torch.device('cuda')
 
@@ -39,12 +39,12 @@ evaluate = args.evaluate > 0
 train_split = args.train_split
 #batches_epoch = args.batches_epoch
 
-print('Arguments parsed.')
+print('Arguments parsed.',flush=True)
 
 np.random.seed(1204565)
 torch.manual_seed(1204565)
 
-print('Dataset loading...')
+print('Dataset loading...',flush=True)
 
 dataset = vis.ViscoelasticDataset(dataset_list, input_dir, output_dir, input_mode=1, regression=regression)
 
@@ -66,9 +66,9 @@ train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
 test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
                                                 sampler=test_sampler)
 
-print('Dataset loaders created...')
+print('Dataset loaders created...',flush=True)
 
-print('Network creation...')
+print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
@@ -107,14 +107,13 @@ net.train()
 loss_history = []
 
 
-print('Training...')
+print('Training...',flush=True)
 
 for epoch in range(epochs):
-    print('Epoch: ', epoch)
+    print('Epoch: ', epoch,flush=True)
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
-        print(batch_index)
         y_out = net(x_batch.to(dvc))
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
@@ -125,7 +124,7 @@ for epoch in range(epochs):
         batch_counts += 1
     avg_loss /= batch_counts
     loss_history.append(avg_loss)
-    if(epoch % 5 == 0 and model_filename != ""):
+    if(epoch % 5 == 0):
         print(avg_loss) 
         torch.save(net.state_dict(), model_filename)
         np.savetxt('train_loss.txt', np.array(loss_history))
