@@ -74,9 +74,9 @@ net = unet.UNet(3,1)
 
 try:
     net.load_state_dict(torch.load(model_filename))
-    print('Model loading completed...')      
+    print('Model loading completed...',flush=True)      
 except:
-    print('Training from scratch...')
+    print('Training from scratch...',flush=True)
 
 
 if(evaluate):
@@ -118,7 +118,6 @@ for epoch in range(epochs):
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
         loss.backward()
-        #nn.utils.clip_grad_value_(net.parameters(), 0.1)
         optimizer.step()
         avg_loss += loss.item()
         batch_counts += 1
