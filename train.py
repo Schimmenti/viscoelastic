@@ -124,7 +124,7 @@ for epoch in range(epochs):
     avg_loss /= batch_counts
     loss_history.append(avg_loss)
     if(epoch % 5 == 0):
-        print(avg_loss) 
+        print(avg_loss,flush=True) 
         torch.save(net.state_dict(), model_filename)
         np.savetxt('train_loss.txt', np.array(loss_history))
 
