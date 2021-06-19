@@ -98,9 +98,9 @@ net.to(dvc)
 
 optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1e-8)
 if(regression):
-    criterion = nn.BCEWithLogitsLoss()
-else:
     criterion = nn.MSELoss()
+else:
+    criterion = nn.BCEWithLogitsLoss()
 
 
 net.train()
