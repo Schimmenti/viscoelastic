@@ -8,7 +8,7 @@ import argparse
 import u_net_model as unet
 import viscoset as vis
 import torch.cuda
-
+import pickle as pkl
 from torch.utils.data.sampler import SubsetRandomSampler
 
 print('Initialization',flush=True)
@@ -90,7 +90,9 @@ with torch.no_grad():
         if(batch_index == n_batches):
             break
         y_out = net(x_batch.to(dvc))
-        if(torch.cuda.is_available()):
-            np.save('test_results_%i.npy' %batch_index, (x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),allow_pickle=True )
-        else:
-            np.save('test_results_%i.npy' %batch_index, (x_batch.numpy(), y_batch.numpy(), y_out.numpy()),allow_pickle=True )
+        with open('test_results_%i.npy' %batch_index, 'wb') as f:
+            if(torch.cuda.is_available()):
+                pkl.dump((x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),f)
+            else:
+                pkl.dump((x_batch.numpy(), y_batch.numpy(), y_out.numpy()),f)
+        
