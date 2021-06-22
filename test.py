@@ -82,10 +82,12 @@ net.to(dvc)
 
 net.eval()
 
+print('Evaluating...',flush=True)
+
 
 with torch.no_grad():
     for batch_index, (x_batch, y_batch) in enumerate(test_loader):
-        if(batch_size == n_batches):
+        if(batch_index == n_batches):
             break
         y_out = net(x_batch.to(dvc))
         if(torch.cuda.is_available()):
