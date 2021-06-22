@@ -37,7 +37,6 @@ dataset_list = args.dataset_list
 model_filename = args.model_filename
 batch_size = args.batch_size
 n_batches = args.n_batches
-epochs = args.epochs
 train_split = args.train_split
 
 print('Arguments parsed.',flush=True)

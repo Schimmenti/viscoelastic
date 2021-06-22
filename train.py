@@ -107,7 +107,6 @@ loss_history = []
 print('Training...',flush=True)
 
 for epoch in range(epochs):
-    
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
