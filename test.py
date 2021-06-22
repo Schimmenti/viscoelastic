@@ -28,6 +28,7 @@ parser.add_argument('--dataset_list', default='')
 parser.add_argument('--model_filename', default='')
 parser.add_argument('--batch_size', type=int, default=10)
 parser.add_argument('--n_batches', type=int, default=3)
+parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
 
 args = parser.parse_args()
