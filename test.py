@@ -74,7 +74,8 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
-net.load_state_dict(torch.load(model_filename))
+net.load_state_dict(torch.load(model_filename),map_location=dvc)
+    
 
 
 net.to(dvc)
