@@ -87,4 +87,7 @@ with torch.no_grad():
         if(batch_size == n_batches):
             break
         y_out = net(x_batch.to(dvc))
-        np.save('test_results_%i.npy' %batch_index, (x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),allow_pickle=True )
+        if(torch.cuda.is_available()):
+            np.save('test_results_%i.npy' %batch_index, (x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),allow_pickle=True )
+        else:
+            np.save('test_results_%i.npy' %batch_index, (x_batch.numpy(), y_batch.numpy(), y_out.numpy()),allow_pickle=True )
