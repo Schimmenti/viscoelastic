@@ -23,7 +23,7 @@ parser.add_argument('--lr', type=float, default=0.001)
 parser.add_argument('--batch_size', type=int, default=10)
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--regression', type=int, default=0)
-
+parser.add_argument('--train_split',type=float, default=0.7)
 
 
 #parser.add_argument('--batches_epoch', type=int, default=20)
