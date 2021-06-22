@@ -39,7 +39,7 @@ model_filename = args.model_filename
 batch_size = args.batch_size
 n_batches = args.n_batches
 train_split = args.train_split
-
+regression = args.regression > 0
 print('Arguments parsed.',flush=True)
 
 np.random.seed(1204565)
