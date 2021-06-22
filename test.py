@@ -74,11 +74,7 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
-try:
-    net.load_state_dict(torch.load(model_filename))
-    print('Model loading completed...',flush=True)      
-except:
-    print('Training from scratch...',flush=True)
+net.load_state_dict(torch.load(model_filename))
 
 
 net.to(dvc)
