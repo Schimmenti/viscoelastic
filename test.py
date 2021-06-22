@@ -90,7 +90,7 @@ with torch.no_grad():
         if(batch_index == n_batches):
             break
         y_out = net(x_batch.to(dvc))
-        with open('test_results_%i.npy' %batch_index, 'wb') as f:
+        with open('test_results_%i.pkl' %batch_index, 'wb') as f:
             if(torch.cuda.is_available()):
                 pkl.dump((x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),f)
             else:
