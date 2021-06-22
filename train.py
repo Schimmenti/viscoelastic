@@ -91,7 +91,8 @@ if(evaluate):
             np.save('x_test_result_%i.npy' % batch_index, x_batch.numpy())
             np.save('y_test_result_%i.npy' % batch_index, y_batch.numpy())
             np.save('out_test_result_%i.npy' % batch_index, y_out.numpy())
-            break
+            if(batch_index > 3):
+                break
         exit(0)
 net.to(dvc)
 
