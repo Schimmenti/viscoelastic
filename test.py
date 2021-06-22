@@ -28,7 +28,6 @@ parser.add_argument('--dataset_list', default='')
 parser.add_argument('--model_filename', default='')
 parser.add_argument('--batch_size', type=int, default=10)
 parser.add_argument('--n_batches', type=int, default=3)
-parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
 
 args = parser.parse_args()
@@ -39,7 +38,6 @@ model_filename = args.model_filename
 batch_size = args.batch_size
 n_batches = args.n_batches
 epochs = args.epochs
-regression = args.regression > 0
 train_split = args.train_split
 
 print('Arguments parsed.',flush=True)
@@ -93,4 +91,4 @@ with torch.no_grad():
         if(batch_size == n_batches):
             break
         y_out = net(x_batch.to(dvc))
-        np.save('test_results_%i.npy' %batch_index, (x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),allow_pickle=Tu )
+        np.save('test_results_%i.npy' %batch_index, (x_batch.cpu().numpy(), y_batch.cpu().numpy(), y_out.cpu().numpy()),allow_pickle=True )
