@@ -84,7 +84,7 @@ if(evaluate):
     with torch.no_grad():
         net.eval()
         
-        for batch_index, (x_batch, y_batch) in enumerate(train_loader):
+        for batch_index, (x_batch, y_batch) in enumerate(test_loader):
             print('Evaluating batch n° %i...' % batch_index)
             
             y_out = net(x_batch)
