@@ -5,3 +5,4 @@ events*.txt
 *.out
 *pycache*/
 *vscode*/
+*train_loss*
