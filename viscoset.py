@@ -29,7 +29,7 @@ class ViscoelasticDataset(Dataset):
         input_data = torch.from_numpy(np.fromfile(input_filename, dtype='float32').reshape(self.nfeatures, self.nrows, self.ncols))
         output_data = np.fromfile(output_filename, dtype='float32').reshape(2, self.nrows, self.ncols)
         if(self.use_regression):
-            output_data = torch.from_numpy(output_data[1,...])
+            output_data = torch.from_numpy(output_data[1,...]/ np.max(output_data[1,...]))
         else:
             output_data = torch.from_numpy(output_data[0,...])
         return input_data, output_data
