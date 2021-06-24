@@ -21,6 +21,7 @@ parser.add_argument('--dataset_list', default='')
 parser.add_argument('--model_filename', default='')
 parser.add_argument('--lr', type=float, default=0.001)
 parser.add_argument('--batch_size', type=int, default=10)
+parser.add_argument('--batches_per_epoch', type=int, default=20)
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
@@ -37,7 +38,7 @@ batch_size = args.batch_size
 epochs = args.epochs
 regression = args.regression > 0
 train_split = args.train_split
-
+batches_per_epoch = args.batches_per_epoch
 
 trailing_name = 'bs=%i_lr=%f_regr=%i' % (batch_size, lr, args.regression)
 
@@ -110,6 +111,8 @@ for epoch in range(epochs):
     avg_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
+        if(batch_index >= batches_per_epoch):
+            break
         y_out = net(x_batch.to(dvc))
         if(regression):
             y_out = F.relu(y_out)
