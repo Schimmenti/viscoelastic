@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.functional as F
+import torch.nn.functional as F
 import numpy as np
 import argparse
 import u_net_model as unet
@@ -111,6 +111,8 @@ for epoch in range(epochs):
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
         y_out = net(x_batch.to(dvc))
+        if(regression):
+            y_out = F.relu(y_out)
         loss = criterion(y_out, y_batch.to(dvc))
         optimizer.zero_grad()
         loss.backward()
