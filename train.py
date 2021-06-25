@@ -8,11 +8,16 @@ import u_net_model as unet
 import viscoset as vis
 import torch.cuda
 
+
+
 from torch.utils.data.sampler import SubsetRandomSampler
 
 print('Initialization',flush=True)
 
-dvc = torch.device('cuda')
+
+dvc = torch.device('cuda:0')
+
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input_dir', default='')
@@ -85,6 +90,10 @@ try:
     print('Model loading completed...',flush=True)      
 except:
     print('Training from scratch...',flush=True)
+
+
+if(torch.cuda.device_count()>1):
+    net = nn.DataParallel(net)
 
 
 net.to(dvc)
