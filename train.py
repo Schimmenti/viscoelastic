@@ -48,6 +48,7 @@ batches_per_epoch = args.batches_per_epoch
 trailing_name = 'bs=%i_lr=%f_regr=%i' % (batch_size, lr, args.regression)
 
 if(model_filename == ''):
+    print('No file has been provided.')
     model_filename = 'vdep_unet_' + trailing_name + '.dict'
 
 
@@ -85,16 +86,17 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
-try:
-    net.load_state_dict(torch.load(model_filename))
-    print('Model loading completed...',flush=True)      
-except:
-    print('Training from scratch...',flush=True)
-
-
 if(torch.cuda.device_count()>1):
     net = nn.DataParallel(net)
 
+
+
+try:
+    net.load_state_dict(torch.load(model_filename))
+    print('Model loading completed...',flush=True)      
+except Exception as e:
+    print(e)
+    print('Training from scratch...',flush=True)
 
 net.to(dvc)
 
