@@ -153,7 +153,7 @@ for epoch in range(epochs):
 
     print('Epoch: ', epoch,flush=True)
     print('Train loss: ', avg_train_loss, flush=True)
-    print('Validation loss: ', avg_train_loss, flush=True)
+    print('Validation loss: ', avg_validation_loss, flush=True)
 
 
     train_history.append(avg_train_loss)
