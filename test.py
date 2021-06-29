@@ -70,10 +70,9 @@ print('Dataset loaders created...',flush=True)
 print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
-
-
-net.load_state_dict(torch.load(model_filename))
-net = nn.DataParallel(net)
+checkpoint = torch.load(model_filename)
+net.load_state_dict(checkpoint['state_dict'])
+#net = nn.DataParallel(net)
 net.to(dvc)
 
 net.eval()

@@ -89,16 +89,20 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
-net = nn.DataParallel(net)
+
 
 
 
 try:
-    net.load_state_dict(torch.load(model_filename))
+    checkpoint = torch.load(model_filename)
+    net.load_state_dict(checkpoint['state_dict'])
     print('Model loading completed...',flush=True)      
 except Exception as e:
+    checkpoint = None
     print('Training from scratch...',flush=True)
 
+#multi gpu training
+net = nn.DataParallel(net)
 net.to(dvc)
 
 
@@ -107,6 +111,8 @@ net.to(dvc)
 
 
 optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1e-8)
+if(checkpoint is not None):
+    optimizer.load_state_dict(checkpoint['optimizer'])
 if(regression):
     criterion = nn.MSELoss()
 else:
@@ -159,6 +165,10 @@ for epoch in range(epochs):
     train_history.append(avg_train_loss)
     validation_history.append(avg_validation_loss)
     if(epoch % 5 == 0):
-        torch.save(net.state_dict(), model_filename)
+        state = {
+        'state_dict': net.module.state_dict(),
+        'optimizer': optimizer.state_dict(),
+        }
+        torch.save(state, model_filename)
         np.savetxt('train_loss_' + trailing_name + '.txt', np.array(train_history))
         np.savetxt('validation_loss_' + trailing_name + '.txt', np.array(validation_history))
