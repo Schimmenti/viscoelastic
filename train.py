@@ -68,10 +68,11 @@ dataset_size = len(dataset)
 indices = list(range(dataset_size))
 split = int(np.floor(train_split * dataset_size))
 split2 = int(0.6*split)
-train_indices, test_indices = indices[split:], indices[:split]
+train_indices, test_indices = indices[:split], indices[split:]
 train_indices, validation_indices = train_indices[:split2], train_indices[split2:]
 
-print(len(train_indices),len(validation_indices))
+print('Train size:', len(train_indices), flush=True)
+print('Validation size:',len(validation_indices),flush=True)
 
 # Creating PT data samplers and loaders:
 train_sampler = SubsetRandomSampler(train_indices)
