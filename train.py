@@ -25,8 +25,8 @@ parser.add_argument('--output_dir', default='')
 parser.add_argument('--dataset_list', default='')
 parser.add_argument('--model_filename', default='')
 parser.add_argument('--lr', type=float, default=0.001)
-parser.add_argument('--batch_size', type=int, default=10)
-parser.add_argument('--batches_per_epoch', type=int, default=20)
+parser.add_argument('--batch_size', type=int, default=20)
+parser.add_argument('--batches_per_epoch', type=int, default=-1)
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
@@ -67,18 +67,19 @@ shuffle_dataset = True
 dataset_size = len(dataset)
 indices = list(range(dataset_size))
 split = int(np.floor(train_split * dataset_size))
-if shuffle_dataset :
-    np.random.shuffle(indices)
+split2 = int(0.6*split)
 train_indices, test_indices = indices[split:], indices[:split]
+train_indices, validation_indices = train_indices[:split2], train_indices[split2:]
+
 
 # Creating PT data samplers and loaders:
 train_sampler = SubsetRandomSampler(train_indices)
-test_sampler = SubsetRandomSampler(test_indices)
+validation_sampler = SubsetRandomSampler(validation_indices)
 
 train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, 
                                            sampler=train_sampler)
-test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
-                                                sampler=test_sampler)
+validation_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
+                                                sampler=validation_sampler)
 
 print('Dataset loaders created...',flush=True)
 
@@ -111,16 +112,17 @@ else:
 
 
 net.train()
-loss_history = []
-
+train_history = []
+validation_history = []
 
 print('Training...',flush=True)
 
 for epoch in range(epochs):
-    avg_loss = 0
+    avg_train_loss = 0
+    avg_validation_loss = 0
     batch_counts = 0
     for batch_index, (x_batch, y_batch) in enumerate(train_loader):
-        if(batch_index >= batches_per_epoch):
+        if(batches_per_epoch > 0 and batch_index >= batches_per_epoch):
             break
         y_out = net(x_batch.to(dvc))
         if(regression):
@@ -129,12 +131,32 @@ for epoch in range(epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        avg_loss += loss.item()
+        avg_train_loss += loss.item()
         batch_counts += 1
-    avg_loss /= batch_counts
+    avg_train_loss /= batch_counts
+
+    with torch.no_grad():
+        batch_counts = 0
+        for batch_index, (x_batch, y_batch) in enumerate(validation_loader):
+            if( batches_per_epoch > 0 and batch_index >= batches_per_epoch):
+                break
+            y_out = net(x_batch.to(dvc))
+            if(regression):
+                y_out = F.relu(y_out)
+            loss = criterion(y_out, y_batch.to(dvc))
+            avg_validation_loss += loss.item()
+            batch_counts += 1
+        avg_validation_loss /= batch_counts  
+
+
     print('Epoch: ', epoch,flush=True)
-    print('Loss: ', avg_loss, flush=True)
-    loss_history.append(avg_loss)
+    print('Train loss: ', avg_train_loss, flush=True)
+    print('Validation loss: ', avg_train_loss, flush=True)
+
+
+    train_history.append(avg_train_loss)
+    validation_history.append(avg_validation_loss)
     if(epoch % 5 == 0):
         torch.save(net.state_dict(), model_filename)
-        np.savetxt('train_loss_' + trailing_name + '.txt', np.array(loss_history))
+        np.savetxt('train_loss_' + trailing_name + '.txt', np.array(train_history))
+        np.savetxt('validation_loss_' + trailing_name + '.txt', np.array(validation_history))

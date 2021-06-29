@@ -54,16 +54,14 @@ shuffle_dataset = True
 dataset_size = len(dataset)
 indices = list(range(dataset_size))
 split = int(np.floor(train_split * dataset_size))
-if shuffle_dataset :
-    np.random.shuffle(indices)
+split = int(np.floor(train_split * dataset_size))
+split2 = int(0.6*split)
 train_indices, test_indices = indices[split:], indices[:split]
+train_indices, validation_indices = train_indices[:split2], train_indices[split2:]
 
 # Creating PT data samplers and loaders:
-train_sampler = SubsetRandomSampler(train_indices)
 test_sampler = SubsetRandomSampler(test_indices)
 
-train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, 
-                                           sampler=train_sampler)
 test_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
                                                 sampler=test_sampler)
 
