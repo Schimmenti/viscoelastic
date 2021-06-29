@@ -70,11 +70,13 @@ print('Dataset loaders created...',flush=True)
 print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
-checkpoint = torch.load(model_filename)
+
 if(torch.cuda.is_available()):
-    net.load_state_dict(checkpoint['state_dict'])
+    checkpoint = torch.load(model_filename)
+    
 else:
-    net.load_state_dict(checkpoint['state_dict'], map_location=torch.device('cpu'))
+    checkpoint = torch.load(model_filename, map_location=torch.device('cpu'))
+net.load_state_dict(checkpoint['state_dict'])
 #net = nn.DataParallel(net)
 net.to(dvc)
 
