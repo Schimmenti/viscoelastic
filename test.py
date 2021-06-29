@@ -71,7 +71,10 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 checkpoint = torch.load(model_filename)
-net.load_state_dict(checkpoint['state_dict'])
+if(torch.cuda.is_available()):
+    net.load_state_dict(checkpoint['state_dict'])
+else:
+    net.load_state_dict(checkpoint['state_dict'], map_location=torch.device('cpu'))
 #net = nn.DataParallel(net)
 net.to(dvc)
 
