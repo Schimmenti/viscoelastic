@@ -6,3 +6,5 @@ events*.txt
 *pycache*/
 *vscode*/
 *train_loss*
+*validation_loss*
+*.pdf
