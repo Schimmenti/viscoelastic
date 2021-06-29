@@ -71,8 +71,9 @@ print('Network creation...',flush=True)
 
 net = unet.UNet(3,1)
 
-net = nn.DataParallel(net)
+
 net.load_state_dict(torch.load(model_filename))
+net = nn.DataParallel(net)
 net.to(dvc)
 
 net.eval()
