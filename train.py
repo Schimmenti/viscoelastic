@@ -12,6 +12,9 @@ import torch.cuda
 
 from torch.utils.data.sampler import SubsetRandomSampler
 
+
+
+
 print('Initialization',flush=True)
 
 
@@ -110,13 +113,17 @@ net.to(dvc)
 #learning part
 
 
+alpha_crit = 1
+beta_crit = 1
+
+
 optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1e-8)
 if(checkpoint is not None):
     optimizer.load_state_dict(checkpoint['optimizer'])
 if(regression):
     criterion = nn.MSELoss()
 else:
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCEWithLogitsLoss(reduction='none')
 
 
 net.train()
@@ -135,7 +142,8 @@ for epoch in range(epochs):
         y_out = net(x_batch.to(dvc))
         if(regression):
             y_out = F.relu(y_out)
-        loss = criterion(y_out, y_batch.to(dvc))
+        y_batch = y_batch.to(dvc)
+        loss = torch.mean(criterion(y_out,y_batch )*torch.pow(y_batch,alpha_crit)*torch.pow(1-y_batch,beta_crit))
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -151,7 +159,8 @@ for epoch in range(epochs):
             y_out = net(x_batch.to(dvc))
             if(regression):
                 y_out = F.relu(y_out)
-            loss = criterion(y_out, y_batch.to(dvc))
+            y_batch = y_batch.to(dvc)
+            loss = torch.mean(criterion(y_out,y_batch )*torch.pow(y_batch,alpha_crit)*torch.pow(1-y_batch,beta_crit))
             avg_validation_loss += loss.item()
             batch_counts += 1
         avg_validation_loss /= batch_counts  
