@@ -160,7 +160,7 @@ for epoch in range(epochs):
             if(regression):
                 y_out = F.relu(y_out)
             y_batch = y_batch.to(dvc)
-            loss = torch.mean(criterion(y_out,y_batch )/(torch.pow(y_batch,alpha_crit)*torch.pow(1-y_batch,beta_crit)))
+            loss = torch.mean(criterion(y_out,y_batch )/(torch.pow(1e-6+y_batch,alpha_crit)*torch.pow(1+1e-6-y_batch,beta_crit)))
             avg_validation_loss += loss.item()
             batch_counts += 1
         avg_validation_loss /= batch_counts  
