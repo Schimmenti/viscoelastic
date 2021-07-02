@@ -69,7 +69,7 @@ lengths = np.diff(mainshock_idxs)
 mask_for_ms = np.argwhere(np.logical_and(lengths >= min_length, lengths <= max_length)).flatten()
 good_ms = mainshock_idxs[mask_for_ms]
 good_lens = lengths[mask_for_ms]
-
+print(good_lens)
 np.savetxt( 'events_to_save_mainshocks.txt', good_ms[:max_n_events],fmt='%i')
 np.savetxt( 'events_to_save_seq.txt', np.concatenate([ np.arange(idx,idx+ln) for idx, ln in zip(good_ms, good_lens) ]).astype('int')[:max_n_events], fmt='%i')
 
