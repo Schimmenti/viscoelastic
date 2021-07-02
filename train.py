@@ -51,7 +51,7 @@ train_split = args.train_split
 batches_per_epoch = args.batches_per_epoch
 reweight = args.reweight > 0
 if(reweight):
-    trailing_name = 'bs=%i_lr=%f_regr=%i_a=%1.3f_b=%1.3f' % (batch_size, lr, args.regression,args.walpha.args.wbeta )
+    trailing_name = 'bs=%i_lr=%f_regr=%i_a=%1.3f_b=%1.3f' % (batch_size, lr, args.regression,args.walpha,args.wbeta )
 else:
     trailing_name = 'bs=%i_lr=%f_regr=%i' % (batch_size, lr, args.regression)
 if(model_filename == ''):
