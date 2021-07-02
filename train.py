@@ -33,7 +33,9 @@ parser.add_argument('--batches_per_epoch', type=int, default=-1)
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--regression', type=int, default=0)
 parser.add_argument('--train_split',type=float, default=0.7)
-
+parser.add_argument('--reweight',type=int,default=0)
+parser.add_argument('--walpha',type=float,default=1)
+parser.add_argument('--wbeta',type=float,default=1)
 
 #parser.add_argument('--batches_epoch', type=int, default=20)
 args = parser.parse_args()
@@ -47,9 +49,11 @@ epochs = args.epochs
 regression = args.regression > 0
 train_split = args.train_split
 batches_per_epoch = args.batches_per_epoch
-
-trailing_name = 'bs=%i_lr=%f_regr=%i' % (batch_size, lr, args.regression)
-
+reweight = args.reweight > 0
+if(reweight):
+    trailing_name = 'bs=%i_lr=%f_regr=%i_a=%1.3f_b=%1.3f' % (batch_size, lr, args.regression,args.walpha.args.wbeta )
+else:
+    trailing_name = 'bs=%i_lr=%f_regr=%i' % (batch_size, lr, args.regression)
 if(model_filename == ''):
     print('No file has been provided.')
     model_filename = 'vdep_unet_' + trailing_name + '.dict'
@@ -113,17 +117,25 @@ net.to(dvc)
 #learning part
 
 
-alpha_crit = 1
-beta_crit = 1
+alpha_crit = args.walpha
+beta_crit = args.wbeta
+
+
 
 
 optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1e-8)
 if(checkpoint is not None):
     optimizer.load_state_dict(checkpoint['optimizer'])
 if(regression):
-    criterion = nn.MSELoss()
+    lossfn = nn.MSELoss()
+    get_loss = lambda y, yo : lossfn(y,yo)
 else:
-    criterion = nn.BCEWithLogitsLoss(reduction='none')
+    if(reweight):
+        lossfn = nn.BCEWithLogitsLoss(reduction='none')
+        get_loss = lambda y, yo : torch.mean(lossfn(y,yo)/(torch.pow(1e-6+y,alpha_crit)*torch.pow(1+1e-6-y,beta_crit)))
+    else:
+        lossfn = nn.BCEWithLogitsLoss()
+        get_loss = lambda y, yo : lossfn(y,yo)
 
 
 net.train()
@@ -131,6 +143,9 @@ train_history = []
 validation_history = []
 
 print('Training...',flush=True)
+
+
+
 
 for epoch in range(epochs):
     avg_train_loss = 0
@@ -143,7 +158,7 @@ for epoch in range(epochs):
         if(regression):
             y_out = F.relu(y_out)
         y_batch = y_batch.to(dvc)
-        loss = torch.mean(criterion(y_out,y_batch )/(torch.pow(1e-6+y_batch,alpha_crit)*torch.pow(1+1e-6-y_batch,beta_crit)))
+        loss =get_loss(y_batch,y_out)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -160,7 +175,7 @@ for epoch in range(epochs):
             if(regression):
                 y_out = F.relu(y_out)
             y_batch = y_batch.to(dvc)
-            loss = torch.mean(criterion(y_out,y_batch )/(torch.pow(1e-6+y_batch,alpha_crit)*torch.pow(1+1e-6-y_batch,beta_crit)))
+            loss =get_loss(y_batch,y_out)
             avg_validation_loss += loss.item()
             batch_counts += 1
         avg_validation_loss /= batch_counts  
