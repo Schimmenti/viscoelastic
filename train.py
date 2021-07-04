@@ -127,15 +127,13 @@ optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=1e-8)
 if(checkpoint is not None):
     optimizer.load_state_dict(checkpoint['optimizer'])
 if(regression):
-    lossfn = nn.MSELoss()
-    get_loss = lambda y, yo : lossfn(y,yo)
+    get_loss = nn.MSELoss()
 else:
     if(reweight):
         lossfn = nn.BCEWithLogitsLoss(reduction='none')
         get_loss = lambda y, yo : torch.mean(lossfn(y,yo)/(torch.pow(1e-6+y,alpha_crit)*torch.pow(1+1e-6-y,beta_crit)))
     else:
-        lossfn = nn.BCEWithLogitsLoss()
-        get_loss = lambda y, yo : lossfn(y,yo)
+        get_loss = nn.BCEWithLogitsLoss()
 
 
 net.train()
