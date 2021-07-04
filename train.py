@@ -131,7 +131,7 @@ if(regression):
 else:
     if(reweight):
         lossfn = nn.BCEWithLogitsLoss(reduction='none')
-        get_loss = lambda y, yo : torch.mean(lossfn(y,yo)/(torch.pow(1e-6+y,alpha_crit)*torch.pow(1+1e-6-y,beta_crit)))
+        get_loss = lambda yo,y : torch.mean(lossfn(yo,y)/(torch.pow(1e-6+y,alpha_crit)*torch.pow(1+1e-6-y,beta_crit)))
     else:
         get_loss = nn.BCEWithLogitsLoss()
 
@@ -156,7 +156,7 @@ for epoch in range(epochs):
         if(regression):
             y_out = F.relu(y_out)
         y_batch = y_batch.to(dvc)
-        loss =get_loss(y_batch,y_out)
+        loss =get_loss(y_out,y_batch)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -173,7 +173,7 @@ for epoch in range(epochs):
             if(regression):
                 y_out = F.relu(y_out)
             y_batch = y_batch.to(dvc)
-            loss =get_loss(y_batch,y_out)
+            loss =get_loss(y_out,y_batch)
             avg_validation_loss += loss.item()
             batch_counts += 1
         avg_validation_loss /= batch_counts  
